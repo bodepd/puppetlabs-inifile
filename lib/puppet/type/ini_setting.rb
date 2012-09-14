@@ -5,8 +5,22 @@ Puppet::Type.newtype(:ini_setting) do
     defaultto :present
   end
 
+  def self.title_patterns
+    identity = lambda {|x| x}
+    [
+      [/\A(\[(\S+)\]\/(\S+)\/(\S+))\Z/m,
+        [[:name,    identity],
+         [:file,    identity],
+         [:section, identity],
+         [:setting, identity]]],
+      [/\A((\S+)\/(\S+))\Z/m,
+        [[:name,    identity],
+         [:section, identity],
+         [:setting, identity]]],
+    ]
+  end
+
   newparam(:name, :namevar => true) do
-    desc 'An arbitrary name used as the identity of the resource.'
   end
 
   newparam(:section) do
@@ -17,10 +31,6 @@ Puppet::Type.newtype(:ini_setting) do
     desc 'The name of the setting to be defined.'
   end
 
-  newparam(:value) do
-    desc 'The value of the setting to be defined.'
-  end
-
   newparam(:path) do
     desc 'The ini file Puppet will ensure contains the specified setting.'
     validate do |value|
@@ -29,5 +39,10 @@ Puppet::Type.newtype(:ini_setting) do
       end
     end
   end
+
+  newproperty(:value) do
+    desc 'The value of the setting to be defined.'
+  end
+
 
 end
